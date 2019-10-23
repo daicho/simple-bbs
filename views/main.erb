@@ -3,82 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <title>Simple BBS</title>
-  <!-- <link rel="stylesheet" href="/css/style.css"> -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="main.css">
 </head>
 
 <body>
-  <h1>Simple BBS</h1>
+  <a href="/"><h1>Simple BBS</h1></a>
 
-  <div class="container">
-    <div id="prev">
-      <% if @page == 1 %>
-        Prev.(none)
-      <% else %>
-        <form method="post"action="prev">
-          <td><input type="submit" value="Prev."></td>
-          <input type="hidden" name="page" value="<%= @page %>">
-        </form>
-      <%end%>
+  <!-- ページ操作 -->
+  <div class="page">
+    <div class="prev">
+      <form method="post"action="prev">
+        <% if @page == 1 %>
+          <input type="submit" value="Prev" disabled>
+        <% else %>
+          <input type="submit" value="Prev">
+        <% end %>
+
+        <input type="hidden" name="page" value="<%= @page %>">
+      </form>
     </div>
 
-    <div id="page">
+    <div class="pagenum">
       <%= @page %>/<%= @last_page %>
     </div>
 
-    <div id="next">
-      <% if @page == @last_page %>
-        Next(none)
-      <% else %>
-        <form method="post" action="next">
-          <td><input type="submit" value="Next"></td>
-          <input type="hidden" name="page" value="<%= @page %>">
-        </form>
-      <%end%>
+    <div class="next">
+      <form method="post" action="next">
+        <% if @page == @last_page %>
+          <input type="submit" value="Next" disabled>
+        <% else %>
+          <input type="submit" value="Next">
+        <%end%>
+        <input type="hidden" name="page" value="<%= @page %>">
+      </form>
     </div>
   </div>
 
-  <div class="thread">
-    <% disp_elements = @posts_len % @page_max %>
+  <!-- 投稿一覧 -->
+  <div class="post">
+    <hr>
+
+    <%# 表示件数を決定 %>
     <% if @posts_len == 0 %>
-      <% disp_elements = 0 %>
-    <% elsif @posts_len % @page_max == 0 || @page != @last_page %>
-      <% disp_elements = @page_max %>
+      <% disp_len = 0 %>
+    <% elsif @page == @last_page %>
+      <% disp_len = (@posts_len - 1) % @page_max + 1 %>
+    <% else %>
+      <% disp_len = @page_max %>
     <% end %>
 
-    <% thisPage = @posts[@page * @page_max - @page_max, disp_elements] %>
-    <% if thisPage != nil %>
-      <% thisPage.each do |a| %>
-        <div id="intro">
-          <table>
-            <tr>
-              <td><%= a.id %>&emsp;</td>
-              <td>[<%= a.name %>]</td>
-              <td><%= a.time %></td>
+    <%# 投稿を表示 %>
+    <% cur_posts = @posts[(@page - 1) * @page_max, disp_len] %>
+    <% cur_posts.each do |post| %>
+      <div class="sig">
+        <table cellspacing="10">
+          <tr align="left">
+            <td class="id"><%= post.id %></td>
+            <td class="name"><%= post.name %></td>
+            <td class="time"><%= post.time %></td>
 
-              <form method="post" action="del">
-                <td><input type="submit" value="Delete"></td>
-                <input type = "hidden" name="id" value="<%= a.id %>">
-                <input type = "hidden" name="_method" value="delete">
-              </form>
-            </tr>
-          </table>
-        </div>
-
-        <div id="message">
-          <%= a.text %>
-          <br>
-        </div>
-      <% end %>
+            <form method="post" action="del">
+              <td><input type="submit" value="Delete"></td>
+              <input type = "hidden" name="id" value="<%= post.id %>">
+              <input type = "hidden" name="_method" value="delete">
+            </form>
+          </tr>
+        </table>
+      </div>
+      <div class="text">
+        <%= post.text %>
+        <br>
+      </div>
+      <hr>
     <% end %>
   </div>
 
-  <div class="post">
+  <!-- 入力フォーム -->
+  <div class="input">
     <form method="post" action="new">
-      <input required type="text" name="name" size="40" \
-          placeholder="Name(50 characters or less)"><br>
-      <textarea required name="text" rows="4" cols="40" \
-          placeholder="Message(500 characters or less)"></textarea><br>
-      <input type="submit" value="Go">
+      <input required type="text" name="name" size="40" maxlength="<%= @name_max %>" \
+          placeholder="Name (<%= @name_max %> characters or less)"><br>
+
+      <textarea required name="text" rows="8" cols="40" maxlength="<%= @text_max %>" \
+          placeholder="Text (<%= @text_max %> characters or less)"></textarea><br>
+
+      <input type="submit" value="Post">
     </form>
   </div>
 </body>

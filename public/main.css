@@ -1,0 +1,33 @@
+@charset "UTF-8";
+
+.page {
+    display: flex;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.pagenum {
+    font-size: 14pt;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.id {
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+.name {
+    color: navy;
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+.time {
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+.text {
+    font-size: 14pt;
+}

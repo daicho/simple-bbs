@@ -58,7 +58,10 @@ get '/:page' do
     @posts = Post.all
     @posts_len = @posts.length
     @last_page = page_num(@posts_len)
+
     @page_max = PAGE_MAX
+    @text_max = TEXT_MAX
+    @name_max = NAME_MAX
 
     # 無効なページ数が指定されたらエラー
     if @page <= 0 or @last_page < @page
@@ -109,7 +112,7 @@ post '/new' do
     # データベースへ書き込み
     post.time = get_time()
     post.text = text.gsub(/(\r\n|\r|\n)/, '<br>')
-    post.name = name.escapeHTML(raw_name)
+    post.name = CGI.escapeHTML(name)
     post.save
 
     # 最新のページを表示
