@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Simple BBS</title>
+  <!-- <link rel="stylesheet" href="/css/style.css"> -->
+</head>
+
+<body>
+  <h1>Simple BBS</h1>
+
+  <div class="container">
+    <div id="prev">
+      <% if @page == 1 %>
+        Prev.(none)
+      <% else %>
+        <form method="post"action="prev">
+          <td><input type="submit" value="Prev."></td>
+          <input type="hidden" name="page" value="<%= @page %>">
+        </form>
+      <%end%>
+    </div>
+
+    <div id="page">
+      <%= @page %>/<%= @last_page %>
+    </div>
+
+    <div id="next">
+      <% if @page == @last_page %>
+        Next(none)
+      <% else %>
+        <form method="post" action="next">
+          <td><input type="submit" value="Next"></td>
+          <input type="hidden" name="page" value="<%= @page %>">
+        </form>
+      <%end%>
+    </div>
+  </div>
+
+  <div class="thread">
+    <% disp_elements = @posts_len % @page_max %>
+    <% if @posts_len == 0 %>
+      <% disp_elements = 0 %>
+    <% elsif @posts_len % @page_max == 0 || @page != @last_page %>
+      <% disp_elements = @page_max %>
+    <% end %>
+
+    <% thisPage = @posts[@page * @page_max - @page_max, disp_elements] %>
+    <% if thisPage != nil %>
+      <% thisPage.each do |a| %>
+        <div id="intro">
+          <table>
+            <tr>
+              <td><%= a.id %>&emsp;</td>
+              <td>[<%= a.name %>]</td>
+              <td><%= a.time %></td>
+
+              <form method="post" action="del">
+                <td><input type="submit" value="Delete"></td>
+                <input type = "hidden" name="id" value="<%= a.id %>">
+                <input type = "hidden" name="_method" value="delete">
+              </form>
+            </tr>
+          </table>
+        </div>
+
+        <div id="message">
+          <%= a.text %>
+          <br>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="post">
+    <form method="post" action="new">
+      <input required type="text" name="name" size="40" \
+          placeholder="Name(50 characters or less)"><br>
+      <textarea required name="text" rows="4" cols="40" \
+          placeholder="Message(500 characters or less)"></textarea><br>
+      <input type="submit" value="Go">
+    </form>
+  </div>
+</body>
+</html>
